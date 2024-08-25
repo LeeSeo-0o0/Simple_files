@@ -41,7 +41,7 @@
         .list-group-item a {
             color: #333;
             text-decoration: none;
-            padding-left: 10px; /* 시각적으로만 공백 추가 */
+            padding-left: 10px;
         }
         .list-group-item a:hover {
             text-decoration: underline;
@@ -70,19 +70,16 @@
 <div class="container">
     <h1 class="mt-4">파일 및 폴더 목록</h1>
     <?php
-    $baseDir = realpath('.'); // 기본 디렉토리의 실제 경로
-    $relativeDir = isset($_GET['dir']) ? urldecode($_GET['dir']) : ''; // 상대 경로
+    $baseDir = realpath('.'); 
+    $relativeDir = isset($_GET['dir']) ? urldecode($_GET['dir']) : ''; 
 
-    // 상대 경로를 실제 경로로 변환
     $currentDir = realpath($baseDir . '/' . $relativeDir);
 
-    // 기본 디렉토리 밖으로 나가지 않도록 제한
     if ($currentDir === false || strpos($currentDir, $baseDir) !== 0) {
         $currentDir = $baseDir;
-        $relativeDir = ''; // 안전을 위해 상대 경로 초기화
+        $relativeDir = '';
     }
 
-    // 상위 폴더로 이동 링크
     if ($relativeDir !== '') {
         $parentDir = dirname($relativeDir);
         echo '<a href="?dir=' . urlencode($parentDir) . '" class="btn btn-secondary"><i class="fas fa-arrow-up"></i> 상위 폴더로 이동</a>';
@@ -91,8 +88,7 @@
     echo '<ul class="list-group">';
 
     $scanned_directory = array_diff(scandir($currentDir), array('..', '.'));
-    
-    // index.php와 index.html 파일을 숨기기 위한 필터링
+
     $scanned_directory = array_filter($scanned_directory, function($item) use ($currentDir) {
         return !in_array($item, array('index.php', 'index.html'));
     });
@@ -140,6 +136,29 @@
             alert('링크 복사에 실패했습니다.');
         });
     }
+
+    // F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U, Ctrl+S 비활성화
+    document.addEventListener('keydown', function(event) {
+        if (event.key === "F12" || 
+            (event.ctrlKey && event.shiftKey && (event.key === "I" || event.key === "J")) || 
+            (event.ctrlKey && (event.key === "U" || event.key === "S"))) {
+            event.preventDefault();
+        }
+    });
+
+    // 마우스 오른쪽 클릭 비활성화
+    document.addEventListener('contextmenu', function(event) {
+        event.preventDefault();
+    });
+
+    // 콘솔 열기 감지
+    setInterval(function() {
+        if (window.console && (console.profile || console.clear)) {
+            console.clear();
+            console.log("개발자 도구 사용이 제한되었습니다.");
+            alert("개발자 도구를 사용할 수 없습니다.");
+        }
+    }, 1000);
 </script>
 </body>  
 </html>
