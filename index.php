@@ -71,16 +71,20 @@
     <h1 class="mt-4">파일 및 폴더 목록</h1>
     <?php
     $baseDir = realpath('.'); // 기본 디렉토리의 실제 경로
-    $currentDir = isset($_GET['dir']) ? realpath($baseDir . '/' . urldecode($_GET['dir'])) : $baseDir;
+    $relativeDir = isset($_GET['dir']) ? urldecode($_GET['dir']) : ''; // 상대 경로
+
+    // 상대 경로를 실제 경로로 변환
+    $currentDir = realpath($baseDir . '/' . $relativeDir);
 
     // 기본 디렉토리 밖으로 나가지 않도록 제한
-    if (strpos($currentDir, $baseDir) !== 0) {
+    if ($currentDir === false || strpos($currentDir, $baseDir) !== 0) {
         $currentDir = $baseDir;
+        $relativeDir = ''; // 안전을 위해 상대 경로 초기화
     }
 
     // 상위 폴더로 이동 링크
-    if ($currentDir !== $baseDir) {
-        $parentDir = dirname($currentDir);
+    if ($relativeDir !== '') {
+        $parentDir = dirname($relativeDir);
         echo '<a href="?dir=' . urlencode($parentDir) . '" class="btn btn-secondary"><i class="fas fa-arrow-up"></i> 상위 폴더로 이동</a>';
     }
 
@@ -90,13 +94,14 @@
     
     // index.php와 index.html 파일을 숨기기 위한 필터링
     $scanned_directory = array_filter($scanned_directory, function($item) use ($currentDir) {
-        return !in_array($item, array('index.php','ads.txt', 'index.html'));
+        return !in_array($item, array('index.php', 'index.html'));
     });
 
     foreach ($scanned_directory as $item) {
         $path = $currentDir . '/' . $item;
-        $relativePath = substr($path, strlen($baseDir) + 1); // 상대 경로 계산
+        $relativePath = ($relativeDir !== '' ? $relativeDir . '/' : '') . $item;
         $encodedPath = urlencode($relativePath);
+
         if (is_dir($path)) {
             echo '<li class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
                     <div>
