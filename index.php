@@ -150,15 +150,6 @@
     document.addEventListener('contextmenu', function(event) {
         event.preventDefault();
     });
-
-    // 콘솔 열기 감지
-    setInterval(function() {
-        if (window.console && (console.profile || console.clear)) {
-            console.clear();
-            console.log("개발자 도구 사용이 제한되었습니다.");
-            alert("개발자 도구를 사용할 수 없습니다.");
-        }
-    }, 1000);
 </script>
 </body>  
 </html>
