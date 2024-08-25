@@ -26,6 +26,9 @@
             background-color: #ffffff;
             color: #333;
             transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
         .list-group-item:hover {
             transform: translateY(-3px);
@@ -58,6 +61,9 @@
         .btn-secondary:hover {
             background-color: #5a6268;
         }
+        .dropdown-menu {
+            min-width: 150px;
+        }
     </style>  
 </head>  
 <body>  
@@ -84,18 +90,45 @@
 
     foreach ($scanned_directory as $item) {
         $path = $currentDir . '/' . $item;
+        $encodedPath = urlencode($path);
         if (is_dir($path)) {
-            echo '<li class="list-group-item list-group-item-action"><i class="fas fa-folder"></i><a href="?dir=' . urlencode($path) . '">' . htmlspecialchars($item) . '</a></li>';
+            echo '<li class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                    <div>
+                        <i class="fas fa-folder"></i><a href="?dir=' . $encodedPath . '">' . htmlspecialchars($item) . '</a>
+                    </div>
+                  </li>';
         } else {
-            echo '<li class="list-group-item list-group-item-action"><i class="fas fa-file"></i><a href="' . htmlspecialchars($path) . '" download>' . htmlspecialchars($item) . '</a></li>';
+            echo '<li class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                    <div>
+                        <i class="fas fa-file"></i><a href="' . htmlspecialchars($path) . '" download>' . htmlspecialchars($item) . '</a>
+                    </div>
+                    <div class="dropdown">
+                        <button class="btn btn-link dropdown-toggle text-dark" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-ellipsis-h"></i>
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <li><button class="dropdown-item" onclick="copyDownloadLink(\'' . htmlspecialchars($path) . '\')">다운로드 링크 복사</button></li>
+                        </ul>
+                    </div>
+                  </li>';
         }
     }
 
     echo '</ul>';
     ?>  
 </div>  
-  
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>  
 <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script>
+<script>
+    function copyDownloadLink(link) {
+        const url = window.location.origin + '/' + link;
+        navigator.clipboard.writeText(url).then(function() {
+            alert('다운로드 링크가 복사되었습니다: ' + url);
+        }, function(err) {
+            alert('링크 복사에 실패했습니다.');
+        });
+    }
+</script>
 </body>  
 </html>
