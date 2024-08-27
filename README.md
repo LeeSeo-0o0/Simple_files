@@ -17,4 +17,4 @@
 이 저장소에서 `index.php` 파일을 다운로드합니다.
 
 ```bash
-git clone https://github.com/your-username/Simple_files.git
+git clone https://github.com/LeeSeo-0o0/Simple_files.git
